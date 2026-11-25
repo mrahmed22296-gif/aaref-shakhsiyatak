@@ -8,6 +8,8 @@
 <meta property="og:title" content="اعرف شخصيتك">
 <meta property="og:description" content="تحليل شخصية مفصّل من إجاباتك أنت — جرّبه مجانًا">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
@@ -29,7 +31,45 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
 <body class="text-white min-h-screen glow">
 <div class="max-w-md mx-auto px-5 py-8">
 
-  <header class="text-center mb-8">
+  <section id="loginScreen" class="card rounded-3xl p-7 text-center fade" style="margin-top:6vh">
+    <div class="text-5xl mb-3">🔮</div>
+    <h1 class="text-2xl font-black mb-2">اعرف شخصيتك</h1>
+    <p class="text-sm text-purple-100/80 leading-7 mb-6">تحليل شخصية مفصّل من إجاباتك أنت — مو كلام عام. سجّل دخولك أولاً، وبعدها يتوفر لك تحليل مجاني قبل الاشتراك.</p>
+    <button id="googleBtn" type="button" class="w-full min-h-12 rounded-xl border border-white/20 bg-white text-slate-700 font-bold text-sm flex justify-center items-center gap-3" onclick="loginWithGoogle()">
+      <span class="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 via-red-500 to-yellow-400"></span>
+      تسجيل الدخول بواسطة Google
+    </button>
+    <p class="mt-4 text-xs leading-6 text-purple-200/60">تسجّل الدخول أولاً، ثم يتوفر لك تحليل مجاني واحد قبل الاشتراك.</p>
+    <p id="loginError" class="hidden mt-4 text-xs text-red-400"></p>
+  </section>
+
+  <section id="subscribeScreen" class="hidden card rounded-3xl p-6 text-center fade" style="margin-top:4vh">
+    <div class="w-14 h-14 mx-auto mb-4 btn text-white rounded-2xl grid place-items-center text-xl font-black">د</div>
+    <p class="text-purple-200/80 text-xs font-bold tracking-wide">اشتراك اعرف شخصيتك</p>
+    <h2 class="text-xl font-black mt-2 mb-2">فعّل اشتراكك الكامل</h2>
+    <p class="text-sm text-purple-100/80 leading-7 mb-5">اشترك مقابل <strong class="text-pink-300">دينار واحد شهريًا</strong> للتحليلات غير المحدودة والأقسام الحصرية.</p>
+    <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+      <p class="m-0 text-xs font-bold">الدفع عبر ومض (WAMD)</p>
+      <img src="https://i.ibb.co/1GvzKs8r/Whats-App-Image-2026-08-06-at-4-44-31-PM-1.jpg" alt="رمز QR للدفع عبر ومض" class="w-52 max-w-full mx-auto my-3 rounded-xl border border-white/10">
+      <p class="m-0 text-[11px] leading-6 text-purple-200/70">امسح رمز QR من تطبيق التمويل أون لاين أو أي تطبيق يدعم ومض.</p>
+    </div>
+    <div class="mt-4 text-right bg-amber-500/10 border border-amber-400/40 rounded-xl p-3 text-[11px] leading-6 text-amber-200">
+      <strong>خطوات التفعيل:</strong><br>1. ادفع 1 دينار عبر ومض.<br>2. خذ صورة للإيصال وأرسلها عبر واتساب.<br>3. ستصلك رسالة بكود التفعيل.
+    </div>
+    <button type="button" onclick="contactWhatsApp()" class="mt-4 w-full bg-[#25D366] hover:bg-[#1ebc58] text-white rounded-xl py-3 text-sm font-bold">إرسال إيصال الدفع على واتساب</button>
+    <div class="mt-5 pt-5 border-t border-white/10">
+      <p class="m-0 text-xs font-bold">لديك كود تفعيل؟</p>
+      <input id="activationCode" type="text" class="mt-3 w-full text-center uppercase bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-400 text-white" placeholder="أدخل كود التفعيل">
+      <button type="button" onclick="activateCode()" class="mt-2 w-full btn rounded-xl py-3 text-sm font-bold">تفعيل الاشتراك</button>
+      <p id="activateMessage" class="hidden mt-3 text-xs font-bold"></p>
+    </div>
+    <button type="button" onclick="backToApp()" class="mt-4 text-xs text-purple-200/60 underline underline-offset-4">العودة لاحقاً</button>
+  </section>
+
+  <div id="appScreen" class="hidden">
+
+  <header class="text-center mb-8 relative">
+    <p id="userChip" class="absolute left-0 top-0 text-[11px] text-purple-200/60"></p>
     <div class="text-5xl mb-3">🔮</div>
     <h1 class="text-3xl font-black mb-1">اعرف شخصيتك</h1>
     <p class="text-purple-200/80 text-sm">تحليل مفصّل عنك أنت، مو كلام عام</p>
@@ -45,8 +85,7 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
       <p class="font-black mb-1">👑 الاشتراك الكامل</p>
       <p class="text-2xl font-black mb-1">دينار واحد <span class="text-sm font-normal text-purple-200/70">شهريًا</span></p>
       <p class="text-xs text-purple-100/80 leading-6 mb-3">تحليلات بلا حدود + أقسام حصرية: جانبك الخفي، شخصيتك بالعلاقات، ومسارك المهني</p>
-      <button data-wait class="btn w-full py-2 rounded-xl font-bold text-sm">انضم لقائمة الانتظار — الاشتراك قريبًا 🔔</button>
-      <p data-waitmsg class="hidden text-xs text-green-300 mt-2">✅ سجلنا اهتمامك! بنعلمك أول ما يفتح</p>
+      <button onclick="showSubscribeScreen()" class="btn w-full py-2 rounded-xl font-bold text-sm">اشترك الآن — الدفع عبر ومض 💳</button>
     </div>
   </section>
 
@@ -98,8 +137,7 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
     <div class="rounded-3xl border border-purple-400/40 bg-purple-500/10 p-5 mb-4 text-center">
       <p class="font-black mb-1">👑 افتح تحليلك الكامل</p>
       <p class="text-xs text-purple-100/80 leading-6 mb-2">بالاشتراك (<span class="font-bold">دينار واحد شهريًا</span>): جانبك الخفي، شخصيتك بالعلاقات، مسارك المهني، وتحليلات بلا حدود</p>
-      <button data-wait class="btn px-6 py-2 rounded-xl font-bold text-sm">اشترك بدينار واحد — قريبًا 🔔</button>
-      <p data-waitmsg class="hidden text-xs text-green-300 mt-2">✅ سجلنا اهتمامك!</p>
+      <button onclick="showSubscribeScreen()" class="btn px-6 py-2 rounded-xl font-bold text-sm">اشترك بدينار واحد عبر ومض 👑</button>
     </div>
     <div class="card rounded-3xl p-6 mb-4">
       <h3 class="font-bold mb-1">✨ من إجاباتك بالضبط</h3>
@@ -172,9 +210,8 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
   <section id="paywall" class="hidden card rounded-3xl p-6 text-center fade">
     <div class="text-4xl mb-3">🌙</div>
     <h2 class="font-black text-xl mb-2">استخدمت تحليلك المجاني</h2>
-    <p class="text-sm text-purple-100/80 mb-4 leading-7">التحليل الأول مجاني، والتحليلات الإضافية بتكون بالاشتراك — ومعاها تنفتح أقسام جديدة: جانبك الخفي، شخصيتك بالعلاقات، ومسارك المهني.<br><span class="font-bold text-purple-200">الاشتراك قريبًا 🔔 بدينار كويتي واحد فقط</span></p>
-    <button id="waitBtn" class="btn w-full py-3 rounded-2xl font-bold mb-3">انضم لقائمة الانتظار — اشترك بدينار واحد أول ما يفتح</button>
-    <p id="waitMsg" class="hidden text-sm text-green-300 mb-3">✅ سجلنا اهتمامك! بنعلمك أول ما يفتح الاشتراك</p>
+    <p class="text-sm text-purple-100/80 mb-4 leading-7">التحليل الأول مجاني، والتحليلات الإضافية بتكون بالاشتراك — ومعاها تنفتح أقسام جديدة: جانبك الخفي، شخصيتك بالعلاقات، ومسارك المهني.<br><span class="font-bold text-purple-200">اشترك بدينار كويتي واحد شهريًا — الدفع عبر ومض</span></p>
+    <button onclick="showSubscribeScreen()" class="btn w-full py-3 rounded-2xl font-bold mb-3">اشترك الآن — الدفع عبر ومض 💳</button>
     <button id="shareBtn2" class="w-full py-3 rounded-2xl font-bold border border-purple-400/40">شارك الموقع مع أصحابك 📤</button>
   </section>
 
@@ -182,6 +219,7 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
     <p>🎭 هذا التحليل للتسلية والترفيه فقط، وما يعتمد على أي حقائق علمية أو تنبؤات، وما يقيس الصحة أو الأصل أو أي جانب حساس.</p>
     <p class="mt-1">اعرف شخصيتك © ٢٠٢٦</p>
   </footer>
+  </div>
 </div>
 
 <canvas id="cardCanvas" width="1080" height="1350" class="hidden"></canvas>
@@ -190,8 +228,149 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
 const $=id=>document.getElementById(id);
 let handHash=null, faceHash=null, quizScores=null, seedBase=null, pickedInsights=[];
 
-function usedFree(){return localStorage.getItem('hs_free_used')==='1'}
-function markFreeUsed(){localStorage.setItem('hs_free_used','1')}
+/* === اشتراك ومض + دخول جوجل (نفس آلية مواقع مسار/محاسبة) === */
+const firebaseConfig = {
+  apiKey: "AIzaSyCBtfYpB_j8X1ME-lMqP738Fy06FalSXIM",
+  authDomain: "resume-builder-access.firebaseapp.com",
+  projectId: "resume-builder-access",
+  storageBucket: "resume-builder-access.firebasestorage.app",
+  messagingSenderId: "209097923358",
+  appId: "1:209097923358:web:90e660900f02a621b5c70f",
+};
+const SITE_ID = "aaref";
+let currentUser = null, auth = null;
+const FS_ROOT = "https://firestore.googleapis.com/v1/projects/resume-builder-access/databases/(default)/documents";
+
+function loginWithGoogle() {
+  if (!auth) { $('loginError').textContent = 'تعذر الاتصال بخدمة تسجيل الدخول. تحقق من الاتصال وأعد المحاولة.'; $('loginError').classList.remove('hidden'); return; }
+  const button = $('googleBtn');
+  const provider = new firebase.auth.GoogleAuthProvider();
+  button.disabled = true; button.classList.add('opacity-60');
+  auth.signInWithPopup(provider).catch((error) => {
+    if (error?.code === 'auth/popup-blocked') {
+      $('loginError').textContent = 'حظر المتصفح النافذة المنبثقة؛ جاري تحويلك إلى صفحة Google لتسجيل الدخول.';
+      $('loginError').classList.remove('hidden');
+      return auth.signInWithRedirect(provider);
+    }
+    throw error;
+  }).catch((e)=>{ $('loginError').textContent = 'تعذر تسجيل الدخول بواسطة Google. أعد المحاولة.'; $('loginError').classList.remove('hidden'); })
+    .finally(()=>{ button.disabled = false; button.classList.remove('opacity-60'); });
+}
+
+function initializeAuth() {
+  try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    auth.getRedirectResult().catch(()=>{});
+    auth.onAuthStateChanged((user) => {
+      currentUser = user;
+      if (user) {
+        $('loginScreen').classList.add('hidden');
+        $('appScreen').classList.remove('hidden');
+        $('userChip').textContent = user.displayName || user.email || '';
+        syncUserDoc(false);
+      } else {
+        $('appScreen').classList.add('hidden');
+        $('subscribeScreen').classList.add('hidden');
+        $('loginScreen').classList.remove('hidden');
+      }
+    });
+  } catch (e) {
+    $('loginError').textContent = 'تعذر الاتصال بخدمة تسجيل الدخول.';
+    $('loginError').classList.remove('hidden');
+  }
+}
+
+async function syncUserDoc(markSubscription) {
+  try {
+    if (!currentUser?.uid) return;
+    const token = await currentUser.getIdToken();
+    const docPath = `projects/resume-builder-access/databases/(default)/documents/users/${currentUser.uid}`;
+    const writes = [
+      { update: { name: docPath, fields: {
+        email: { stringValue: currentUser.email || "" },
+        name: { stringValue: currentUser.displayName || "" },
+        lastSeenAt: { timestampValue: new Date().toISOString() },
+      } }, updateMask: { fieldPaths: ["email", "name", "lastSeenAt"] } },
+      { transform: { document: docPath, fieldTransforms: [
+        { fieldPath: "sites", appendMissingElements: { values: [{ stringValue: SITE_ID }] } },
+      ] } },
+    ];
+    if (markSubscription) {
+      writes.push({ transform: { document: docPath, fieldTransforms: [
+        { fieldPath: "subscriptions", appendMissingElements: { values: [{ stringValue: SITE_ID }] } },
+      ] } });
+    }
+    await fetch(FS_ROOT + ":commit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+      body: JSON.stringify({ writes }),
+    });
+  } catch (e) {}
+}
+
+function getUsedCodes() {
+  try { const used = JSON.parse(localStorage.getItem("aaref_used_activation_codes") || "[]");
+    return Array.isArray(used) ? used.filter(c => typeof c === "string") : []; } catch { return []; }
+}
+function isCodeUsed(code) { return getUsedCodes().includes(code); }
+function markCodeAsUsed(code) { const used = getUsedCodes(); if (!used.includes(code)) { used.push(code); localStorage.setItem("aaref_used_activation_codes", JSON.stringify(used)); } }
+function isSubscribed() { return Boolean(currentUser?.uid && localStorage.getItem(`aaref_subscribed_${currentUser.uid}`) === "true"); }
+function setSubscribed(code) { if (!currentUser?.uid) return; localStorage.setItem(`aaref_subscribed_${currentUser.uid}`, "true"); if (code) markCodeAsUsed(code); }
+function usedFree(){ return isSubscribed() ? false : Boolean(currentUser?.uid && localStorage.getItem(`aaref_free_used_${currentUser.uid}`) === '1'); }
+function markFreeUsed(){ if(currentUser?.uid) localStorage.setItem(`aaref_free_used_${currentUser.uid}`,'1'); }
+
+function showSubscribeScreen() {
+  if (isSubscribed()) { alert('اشتراكك مفعل بالفعل ✅'); return; }
+  ['appScreen'].forEach(id=>$(id).classList.add('hidden'));
+  $('subscribeScreen').classList.remove('hidden');
+  $('activationCode').value = '';
+  $('activateMessage').classList.add('hidden');
+  window.scrollTo(0,0);
+}
+function backToApp() {
+  $('subscribeScreen').classList.add('hidden');
+  $('appScreen').classList.remove('hidden');
+}
+async function activateCode() {
+  const code = $('activationCode').value.trim().toUpperCase();
+  const message = $('activateMessage');
+  message.classList.remove('hidden');
+  if (!code) { message.className = 'mt-3 text-xs font-bold text-red-400'; message.textContent = 'أدخل كود التفعيل أولاً.'; return; }
+  message.className = 'mt-3 text-xs font-bold text-purple-200/70'; message.textContent = 'جاري التحقق من الكود...';
+  let okCode = false;
+  try {
+    const rr = await fetch("https://mohasaba-online.vercel.app/api/redeem", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ site: SITE_ID, code }),
+    });
+    const rd = await rr.json();
+    okCode = !!(rd && rd.ok);
+  } catch (e) {
+    message.className = 'mt-3 text-xs font-bold text-red-400'; message.textContent = 'تعذر التحقق من الكود. تحقق من الاتصال وأعد المحاولة.'; return;
+  }
+  if (!okCode) { message.className = 'mt-3 text-xs font-bold text-red-400'; message.textContent = 'كود التفعيل غير صحيح.'; return; }
+  if (isCodeUsed(code)) { message.className = 'mt-3 text-xs font-bold text-red-400'; message.textContent = 'تم استخدام هذا الكود مسبقاً.'; return; }
+  if (isSubscribed()) { message.className = 'mt-3 text-xs font-bold text-green-300'; message.textContent = 'حسابك مفعل بالفعل.'; return; }
+  setSubscribed(code);
+  syncUserDoc(true);
+  message.className = 'mt-3 text-xs font-bold text-green-300'; message.textContent = 'تم تفعيل الاشتراك بنجاح ✅ جاري الرجوع...';
+  setTimeout(backToApp, 1100);
+}
+function contactWhatsApp() {
+  const phone = "96560085043";
+  const name = currentUser?.displayName || "";
+  const email = currentUser?.email || "";
+  const text = encodeURIComponent(`السلام عليكم،
+أريد تفعيل الاشتراك في اعرف شخصيتك.
+المبلغ: 1 دينار
+الاسم: ${name}
+الإيميل: ${email}
+
+مرفق إيصال الدفع عبر ومض.`);
+  window.open(`https://wa.me/${phone}?text=${text}`, "_blank", "noopener,noreferrer");
+}
+initializeAuth();
 
 const TRAITS=['الإبداع','القيادة','الذكاء الاجتماعي','الطموح','الهدوء','الثقة بالنفس'];
 const POOL=[
@@ -385,12 +564,7 @@ $('shareCardBtn').onclick=async()=>{
   }catch(e){}
 };
 
-function refreshWait(){const on=localStorage.getItem('hs_waitlist')==='1';
-  document.querySelectorAll('[data-wait]').forEach(b=>{if(on){b.disabled=true;b.textContent='تم التسجيل ✅'}});
-  document.querySelectorAll('[data-waitmsg]').forEach(m=>{if(on)m.classList.remove('hidden')});}
-document.querySelectorAll('[data-wait]').forEach(b=>b.onclick=()=>{localStorage.setItem('hs_waitlist','1');refreshWait()});
-const _wb=$('waitBtn');if(_wb){_wb.dataset.wait='1';_wb.onclick=()=>{localStorage.setItem('hs_waitlist','1');refreshWait()};}
-refreshWait();
+
 function share(){
   const txt='طلع تحليل شخصيتي وصُدمت كم يشبهني 😳 جاوب ٦ أسئلة وشوف نتيجتك — أول تحليل مجاني: '+location.href;
   if(navigator.share){navigator.share({title:'اعرف شخصيتك',text:txt,url:location.href}).catch(()=>{})}
