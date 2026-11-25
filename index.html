@@ -134,7 +134,7 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
       <p id="archDesc" class="text-sm text-purple-100/90 leading-7"></p>
     </div>
 
-    <div class="rounded-3xl border border-purple-400/40 bg-purple-500/10 p-5 mb-4 text-center">
+    <div id="subBanner" class="rounded-3xl border border-purple-400/40 bg-purple-500/10 p-5 mb-4 text-center">
       <p class="font-black mb-1">👑 افتح تحليلك الكامل</p>
       <p class="text-xs text-purple-100/80 leading-6 mb-2">بالاشتراك (<span class="font-bold">دينار واحد شهريًا</span>): جانبك الخفي، شخصيتك بالعلاقات، مسارك المهني، وتحليلات بلا حدود</p>
       <button onclick="showSubscribeScreen()" class="btn px-6 py-2 rounded-xl font-bold text-sm">اشترك بدينار واحد عبر ومض 👑</button>
@@ -170,26 +170,26 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
       <p id="lucky" class="text-sm"></p>
     </div>
 
-    <!-- premium teasers -->
-    <div class="card rounded-3xl p-6 mb-4 locked">
+    <!-- premium sections -->
+    <div id="premBig" class="card rounded-3xl p-6 mb-4 locked">
       <div class="blur">
         <h3 class="font-bold mb-2">🌑 جانبك الخفي</h3>
-        <p class="text-sm leading-7">اللي ما يعرفه عنك حتى أقرب الناس لك: تخفي وراء قوتك حساسية عميقة، وتتأثر بالكلمة أكثر من اللي تبين، وهذا سر قوتك وضعفك بنفس الوقت...</p>
+        <p id="hiddenBody" class="text-sm leading-7">اللي ما يعرفه عنك حتى أقرب الناس لك...</p>
       </div>
-      <div class="locklay">
+      <div class="locklay cursor-pointer" onclick="showSubscribeScreen()">
         <div class="text-2xl">🔒</div>
         <p class="font-bold text-sm">جانبك الخفي</p>
-        <p class="text-xs text-purple-200/80">ينفتح مع الاشتراك — دينار واحد فقط · قريبًا</p>
+        <p class="text-xs text-purple-200/80">ينفتح مع الاشتراك — دينار واحد · اضغط هنا</p>
       </div>
     </div>
     <div class="grid grid-cols-2 gap-3 mb-4">
-      <div class="card rounded-3xl p-4 locked">
-        <div class="blur"><h3 class="font-bold mb-1 text-sm">❤️ بالعلاقات</h3><p class="text-xs leading-6">أسلوبك بالحب والصداقة وشنو اللي يكسر ثقتك...</p></div>
-        <div class="locklay"><div class="text-xl">🔒</div><p class="text-[11px] text-purple-200/80">مع الاشتراك · دينار واحد</p></div>
+      <div id="premLove" class="card rounded-3xl p-4 locked">
+        <div class="blur"><h3 class="font-bold mb-1 text-sm">❤️ بالعلاقات</h3><p id="loveBody" class="text-xs leading-6">أسلوبك بالحب والصداقة...</p></div>
+        <div class="locklay cursor-pointer" onclick="showSubscribeScreen()"><div class="text-xl">🔒</div><p class="text-[11px] text-purple-200/80">مع الاشتراك · دينار واحد</p></div>
       </div>
-      <div class="card rounded-3xl p-4 locked">
-        <div class="blur"><h3 class="font-bold mb-1 text-sm">💼 مسارك</h3><p class="text-xs leading-6">البيئة اللي تنجح فيها والشغل اللي يناسب شخصيتك...</p></div>
-        <div class="locklay"><div class="text-xl">🔒</div><p class="text-[11px] text-purple-200/80">مع الاشتراك · دينار واحد</p></div>
+      <div id="premCareer" class="card rounded-3xl p-4 locked">
+        <div class="blur"><h3 class="font-bold mb-1 text-sm">💼 مسارك</h3><p id="careerBody" class="text-xs leading-6">البيئة اللي تنجح فيها...</p></div>
+        <div class="locklay cursor-pointer" onclick="showSubscribeScreen()"><div class="text-xl">🔒</div><p class="text-[11px] text-purple-200/80">مع الاشتراك · دينار واحد</p></div>
       </div>
     </div>
 
@@ -446,6 +446,32 @@ const SURPRISE=[
  'وراء حبك للمغامرة، تدور شي ثابت يعطيك أمان — ولما تلقاه، بتتمسك فيه أكثر من أي أحد.'
 ];
 const TRAIT_ARCH=[1,0,2,3,4,5];
+
+/* === محتوى الأقسام الحصرية (لكل نوع شخصية) === */
+const HIDDEN=[
+ 'وراء صورتك القوية، فيه جانب منك يتمنى أحيانًا إن أحد ثاني يحمل المسؤولية عنه ولو يوم واحد. تخفي تعبك عشان ما تهز صورتك قدام الناس، بس اللي ما يعرفونه إن قوتك الحقيقية مو إنك ما تتعب — قوتك إنك تكمل وأنت تعبان.',
+ 'الناس تشوف أفكارك وتقول خيال واسع، بس ما يعرفون إن ورا كل فكرة ليالِ من التفكير والشك. أنت أقسى ناقد على نفسك، وتخبي شغلات سويتها لأنك حاس إنها مو كافية، وهي أحسن من شغل ناس كثير. جرّب تشارك شغلك أول بأول، وبتنصدم كم يعجب الناس.',
+ 'الكل يشوفك طاقة وضحكة، بس القليل يعرف إنك تحتاج وقت لحالك تعيد شحن نفسك. تعطي الناس من طاقتك لين تخلص، وتستحي تقول أبغى أكون لحالي خوفًا إنهم يفهمونها غلط. هذي مو أنانية — بطاريتك تحتاج شاحن مثل كل أحد.',
+ 'وراء عزيمتك فيه خوف هادئ ما تحكي عنه: إن اللي تسويه ما يكفي. عشان كذا ما تحتفل بإنجازاتك، عينك على اللي بعده قبل ما تكمل فرحة اللي قبله. اللي ما يعرفونه إنك تستاهل توقف وتقول لنفسك أحسنت من قلب.',
+ 'هدوءك يخلي الناس تحسبك ما تتأثر، والحقيقة إنك تشيل أكثر من اللي تبين. أنت من النوع اللي يعالج مشاعره بصمت، وورا كل ما عليه قلب يفكر بالموضوع أيام. اللي يقربون منك فعلاً هم بس اللي يشوفون هالعمق.',
+ 'وراء حبك للحركة والتجديد، فيه جانب منك يدور الاستقرار بصمت. تخاف من الروتين بس تخاف أيضًا إن ما تلقى شي أو أحد يخليك توقف عنده بإرادتك. ولما تلقاه، بتكتشف إن حريتك الحقيقية كانت تدور بيت توقف فيه مو طريق تهرب فيه.'
+];
+const LOVE=[
+ 'واضح ومباشر: تدل على حبك بالفعل أكثر من الكلام، وتحمل مسؤولية اللي تحبهم بدون ما يسألونك. اللي يكسر ثقتك: التلاعب والوعود الفاضية. لا تنسى إن القريب منك يحتاج يسمع الكلمة الحلوة مو بس يشوف الفعل.',
+ 'تدخل العلاقة بخيال وتفاصيل صغيرة تخليها قصة مو روتين. اللي يكسر ثقتك: البرود والتقليل من أفكارك. لا ترسم صورة مثالية براسك وتزعل لما الواقع يختلف — خلّ مساحة للناس تكون على طبيعتها.',
+ 'قلبك يتسع للجميع وتعطي بسخاء، وتفرح لفرح اللي تحبهم قبل فرحك. اللي يكسر ثقتك: التجاهل وإحساس إن وجودك مأخوذ كأمر مسلّم فيه. تذكّر إن اللي يحبك فعلاً يبي يسمع عنك أنت، مو بس عن مشاكله.',
+ 'جاد بمشاعرك: ما تدخل علاقة عشان تملا فراغ، تدخل عشان تبني. اللي يكسر ثقتك: اللامبالاة وقلة الطموح عند الطرف الثاني. بس مو كل لحظة لازم تكون خطوة بهدف — أحيانًا الغبطة بلا خطة هي اللي تقوّي العلاقة.',
+ 'علاقاتك عميقة وقليلة: ما تفتح قلبك بسرعة، بس إذا فتحته يكون الولاء كامل. اللي يكسر ثقتك: كشف أسرارك أو التقليل من خصوصيتك. اللي يحبك يبي يقرب منك أكثر، فلا تعاقبه بصمتك على شي ما يعرفه.',
+ 'تعيش العلاقة مغامرة: مفاجآت وضحك وخطط لحظية. اللي يكسر ثقتك: التقييد والشك الزايد. بس اللي يحبك يحتاج يحس إنك ثابت له وسط حركتك — خلّ له مرساة وسط مغامراتك.'
+];
+const CAREER=[
+ ['تنجح في بيئة فيها قرار ومسؤولية، وتمل من شغل دورك فيه تنفيذ بس.','إدارة المشاريع · ريادة الأعمال · المبيعات والتفاوض · الإدارة'],
+ ['تنجح في بيئة تعطيك حرية تجرب وتخطي، وتختنق بالإجراءات الجامدة.','التصميم والإعلان · صناعة المحتوى · تطوير المنتجات · التسويق'],
+ ['تنجح في بيئة فيها ناس وتفاعل يومي، وتذبل في مكتب منعزل.','الموارد البشرية · التعليم والتدريب · العلاقات العامة · الإعلام'],
+ ['تنجح في بيئة تقيس النتائج وتكافي الإنجاز، وتتضايق من اللي ما فيها ترقية.','التقنية والهندسة · المالية والاستثمار · إدارة العمليات · مشروعك الخاص'],
+ ['تنجح في بيئة هادئة فيها تركيز وقيمة للخبرة، وتتوتر في الفوضى والاستعجال الدائم.','التحليل والبحث · المحاسبة والتدقيق · الكتابة والتحرير · التخطيط'],
+ ['تنجح في بيئة متجددة فيها ميدان وحركة، وتمل من الدوام الثابت.','السياحة والضيافة · الإعلام الميداني · المبيعات الميدانية · الأعمال الحرة']
+];
 const STRENGTHS=['تحفز اللي حولك بدون ما تحس','تحافظ على هدوءك تحت الضغط','عندك حس فني وذوق مميز','كلمتك وحدة وما ترجع فيها','تتعلم من أخطائك بسرعة','حدسك قوي وغالبًا يصيب','تعرف توازن بين قلبك وعقلك','إصرارك يوصلك لما تبيه'];
 const COLORS=['البنفسجي 💜','الأزرق 💙','الأخضر 💚','الذهبي 💛','الأحمر ❤️','التركواز 🩵'];
 const HAND_EXTRA=['خطوط كفك توحي بشخصية صبورة تعرف تنتظر الفرصة الصح ✋','ملامح يدك تدل على يد تعطي قبل ما تاخذ ✋','كفك يوحي بشخص عملي يحب النتائج أكثر من الكلام ✋'];
@@ -500,6 +526,21 @@ function showResult(){
   const st=[...STRENGTHS].sort(()=>r()-0.5).slice(0,3);
   $('strengths').innerHTML=st.map(s=>'<li>✦ '+s+'</li>').join('');
   $('lucky').textContent=pick(r,COLORS)+' • '+(1+Math.floor(r()*9));
+  // premium sections: fill content for everyone, unlock visually for subscribers
+  let sec=0,sbest=-1;
+  quizScores.forEach((v,i)=>{if(i!==dom){const j=v+r()*0.5;if(j>sbest){sbest=j;sec=i}}});
+  const secName=TRAITS[sec];
+  $('hiddenBody').textContent=HIDDEN[ai]+' واللي يميزك عن غيرك من نفس نوعك لمسة «'+secName+'» واضحة بتعاملك وقراراتك — هالخلطة هي اللي تخلي شخصيتك نسختك أنت مو قالب عام.';
+  $('loveBody').textContent=LOVE[ai];
+  $('careerBody').textContent=CAREER[ai][0]+' الأنسب لك: '+CAREER[ai][1]+'.';
+  const sub=isSubscribed();
+  $('subBanner').classList.toggle('hidden',sub);
+  ['premBig','premLove','premCareer'].forEach(id=>{
+    const el=$(id);
+    el.classList.toggle('locked',!sub);
+    el.querySelector('.blur').classList.toggle('blur',!sub);
+    el.querySelector('.locklay').classList.toggle('hidden',sub);
+  });
   $('step3').classList.add('hidden');$('step4').classList.remove('hidden');
   setTimeout(()=>{document.querySelectorAll('#bars .bar>div').forEach(b=>{b.style.width=b.dataset.v+'%'})},120);
   drawCard(a[0],dom);
