@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>اعرف شخصيتك | تحليل شخصية ممتع من إجاباتك</title>
-<meta name="description" content="جاوب أسئلة سريعة واحصل على تحليل شخصية ممتع خلال دقيقة. تقدر تضيف صورة كفك أو وجهك لتفاصيل أكثر. أول تحليل مجاني.">
+<meta name="description" content="جاوب أسئلة سريعة واحصل على تحليل شخصية مفصّل عنك أنت — مو كلام عام. أول تحليل مجاني.">
 <meta property="og:title" content="اعرف شخصيتك">
-<meta property="og:description" content="اختبار شخصية ممتع — جاوب واكتشف شخصيتك خلال دقيقة">
+<meta property="og:description" content="تحليل شخصية مفصّل من إجاباتك أنت — جرّبه مجانًا">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -20,7 +20,10 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
 .btn{background:linear-gradient(90deg,#a855f7,#ec4899)}
 .btn:disabled{opacity:.5}
 .spin{animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
-.fade{animation:fd .6s ease both}@keyframes fd{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.fade{animation:fd .6s ease both}@keyframes fd{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}}
+.locked{position:relative;overflow:hidden}
+.locked .blur{filter:blur(7px);opacity:.55;pointer-events:none;user-select:none}
+.locklay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 </style>
 </head>
 <body class="text-white min-h-screen glow">
@@ -29,19 +32,17 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
   <header class="text-center mb-8">
     <div class="text-5xl mb-3">🔮</div>
     <h1 class="text-3xl font-black mb-1">اعرف شخصيتك</h1>
-    <p class="text-purple-200/80 text-sm">جاوب أسئلة سريعة واكتشف شخصيتك خلال دقيقة</p>
+    <p class="text-purple-200/80 text-sm">تحليل مفصّل عنك أنت، مو كلام عام</p>
   </header>
 
-  <!-- STEP 0: intro -->
   <section id="step0" class="card rounded-3xl p-6 text-center fade">
     <div class="text-4xl mb-3">✨</div>
     <h2 class="font-black text-xl mb-2">كيف يشتغل؟</h2>
-    <p class="text-sm text-purple-100/80 leading-7 mb-5">١) جاوب ٦ أسئلة سريعة عنك<br>٢) (اختياري) أضف صورة كفك أو وجهك لتفاصيل أكثر<br>٣) يطلع لك تحليل شخصيتك فورًا</p>
+    <p class="text-sm text-purple-100/80 leading-7 mb-5">١) جاوب ٦ أسئلة سريعة عنك<br>٢) (اختياري) أضف صورة كفك أو وجهك لتفاصيل أكثر<br>٣) يطلع لك تحليل مفصّل مبني على إجاباتك أنت</p>
     <button id="startBtn" class="btn w-full py-3 rounded-2xl font-bold text-lg">ابدأ الاختبار ✨</button>
     <p class="text-xs text-purple-200/60 mt-4">أول تحليل مجاني 🎁</p>
   </section>
 
-  <!-- STEP 1: quiz -->
   <section id="step1" class="hidden fade">
     <div class="flex justify-between items-center mb-4 text-sm">
       <span class="font-bold">الأسئلة</span>
@@ -51,7 +52,6 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
     <div id="qcard" class="card rounded-3xl p-6"></div>
   </section>
 
-  <!-- STEP 2: optional photos -->
   <section id="step2" class="hidden card rounded-3xl p-6 text-center fade">
     <h2 class="font-black text-xl mb-2">صور لتفاصيل أكثر <span class="text-sm font-normal text-purple-200/70">(اختياري)</span></h2>
     <p class="text-sm text-purple-100/70 mb-5">تقدر تكمل بدون صور، أو تضيف وحدة منهم أو الاثنتين</p>
@@ -76,50 +76,90 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
     <p class="text-[11px] text-purple-200/50 mt-4 leading-5">🔒 صورك ما تطلع من جهازك ولا تنحفظ بأي مكان — التحليل يتم على هاتفك مباشرة وتُحذف الصور فور الانتهاء</p>
   </section>
 
-  <!-- STEP 3: analyzing -->
   <section id="step3" class="hidden card rounded-3xl p-8 text-center">
     <div class="spin text-4xl mb-4 inline-block">🔮</div>
     <p id="status" class="font-bold">جاري التحليل...</p>
   </section>
 
-  <!-- STEP 4: result -->
   <section id="step4" class="hidden fade">
     <div class="card rounded-3xl p-6 mb-4 text-center">
       <p class="text-xs text-purple-200/70 mb-1">نوع شخصيتك</p>
       <h2 id="archetype" class="text-2xl font-black mb-2"></h2>
       <p id="archDesc" class="text-sm text-purple-100/90 leading-7"></p>
     </div>
+
+    <div class="card rounded-3xl p-6 mb-4">
+      <h3 class="font-bold mb-1">✨ من إجاباتك بالضبط</h3>
+      <p class="text-[11px] text-purple-200/60 mb-4">هذا مو تحليل عام — هذي قراءة في اللي اخترته أنت:</p>
+      <ul id="insights" class="text-sm space-y-3 text-purple-100/90 leading-7"></ul>
+    </div>
+
+    <div class="card rounded-3xl p-6 mb-4 text-center border-pink-400/30">
+      <h3 class="font-bold mb-2">😮 شي ما تتوقعه عن نفسك</h3>
+      <p id="surprise" class="text-sm text-purple-100/90 leading-7"></p>
+    </div>
+
     <div id="photoExtra" class="hidden card rounded-3xl p-6 mb-4">
       <h3 class="font-bold mb-2">📸 تفاصيل إضافية من صورك</h3>
       <ul id="extraList" class="text-sm space-y-2 text-purple-100/90"></ul>
     </div>
+
     <div class="card rounded-3xl p-6 mb-4">
       <h3 class="font-bold mb-4">📊 مقاييس شخصيتك</h3>
       <div id="bars" class="space-y-4"></div>
     </div>
+
     <div class="card rounded-3xl p-6 mb-4">
       <h3 class="font-bold mb-2">💪 نقاط قوتك</h3>
-      <ul id="strengths" class="text-sm space-y-2 text-purple-100/90"></ul>
+      <ul id="strengths" class="text-sm space-y-2 text-purple-100/90 leading-7"></ul>
     </div>
+
     <div class="card rounded-3xl p-6 mb-4 text-center">
       <h3 class="font-bold mb-2">🎨 لونك و 🍀 رقمك</h3>
       <p id="lucky" class="text-sm"></p>
     </div>
-    <div class="flex gap-3 mb-4">
-      <button id="shareBtn" class="btn flex-1 py-3 rounded-2xl font-bold">شارك الموقع 📤</button>
-      <button onclick="location.reload()" class="flex-1 py-3 rounded-2xl font-bold border border-purple-400/40">من الأول 🔄</button>
+
+    <!-- premium teasers -->
+    <div class="card rounded-3xl p-6 mb-4 locked">
+      <div class="blur">
+        <h3 class="font-bold mb-2">🌑 جانبك الخفي</h3>
+        <p class="text-sm leading-7">اللي ما يعرفه عنك حتى أقرب الناس لك: تخفي وراء قوتك حساسية عميقة، وتتأثر بالكلمة أكثر من اللي تبين، وهذا سر قوتك وضعفك بنفس الوقت...</p>
+      </div>
+      <div class="locklay">
+        <div class="text-2xl">🔒</div>
+        <p class="font-bold text-sm">جانبك الخفي</p>
+        <p class="text-xs text-purple-200/80">ينفتح مع الاشتراك — قريبًا</p>
+      </div>
     </div>
-    <div class="card rounded-3xl p-5 text-center border-purple-400/30">
-      <p class="text-sm font-bold mb-1">✨ التحليلات الجاية بالاشتراك</p>
-      <p class="text-xs text-purple-200/70 leading-6">تحليل أعمق وتقارير جديدة كل أسبوع — الاشتراك قريبًا</p>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="card rounded-3xl p-4 locked">
+        <div class="blur"><h3 class="font-bold mb-1 text-sm">❤️ بالعلاقات</h3><p class="text-xs leading-6">أسلوبك بالحب والصداقة وشنو اللي يكسر ثقتك...</p></div>
+        <div class="locklay"><div class="text-xl">🔒</div><p class="text-[11px] text-purple-200/80">مع الاشتراك</p></div>
+      </div>
+      <div class="card rounded-3xl p-4 locked">
+        <div class="blur"><h3 class="font-bold mb-1 text-sm">💼 مسارك</h3><p class="text-xs leading-6">البيئة اللي تنجح فيها والشغل اللي يناسب شخصيتك...</p></div>
+        <div class="locklay"><div class="text-xl">🔒</div><p class="text-[11px] text-purple-200/80">مع الاشتراك</p></div>
+      </div>
     </div>
+
+    <!-- share card -->
+    <div class="card rounded-3xl p-6 mb-4 text-center">
+      <h3 class="font-bold mb-3">📲 بطاقة نتيجتك</h3>
+      <img id="cardImg" class="rounded-2xl mx-auto mb-4 max-h-80" alt="بطاقة النتيجة">
+      <div class="flex gap-3">
+        <a id="dlBtn" download="نتيجتي-اعرف-شخصيتك.png" class="btn flex-1 py-3 rounded-2xl font-bold text-center">حمّل البطاقة</a>
+        <button id="shareCardBtn" class="flex-1 py-3 rounded-2xl font-bold border border-purple-400/40">شاركها 📤</button>
+      </div>
+    </div>
+
+    <button id="shareBtn" class="btn w-full py-3 rounded-2xl font-bold mb-3">شارك الموقع مع أصحابك 📤</button>
+    <button onclick="location.reload()" class="w-full py-3 rounded-2xl font-bold border border-purple-400/40 mb-4">من الأول 🔄</button>
   </section>
 
-  <!-- paywall -->
   <section id="paywall" class="hidden card rounded-3xl p-6 text-center fade">
     <div class="text-4xl mb-3">🌙</div>
     <h2 class="font-black text-xl mb-2">استخدمت تحليلك المجاني</h2>
-    <p class="text-sm text-purple-100/80 mb-4 leading-7">التحليل الأول مجاني، والتحليلات الإضافية بتكون بالاشتراك.<br><span class="font-bold text-purple-200">الاشتراك قريبًا 🔔</span></p>
+    <p class="text-sm text-purple-100/80 mb-4 leading-7">التحليل الأول مجاني، والتحليلات الإضافية بتكون بالاشتراك — ومعاها تنفتح أقسام جديدة: جانبك الخفي، شخصيتك بالعلاقات، ومسارك المهني.<br><span class="font-bold text-purple-200">الاشتراك قريبًا 🔔</span></p>
     <button id="waitBtn" class="btn w-full py-3 rounded-2xl font-bold mb-3">انضم لقائمة الانتظار</button>
     <p id="waitMsg" class="hidden text-sm text-green-300 mb-3">✅ سجلنا اهتمامك! بنعلمك أول ما يفتح الاشتراك</p>
     <button id="shareBtn2" class="w-full py-3 rounded-2xl font-bold border border-purple-400/40">شارك الموقع مع أصحابك 📤</button>
@@ -131,42 +171,41 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
   </footer>
 </div>
 
+<canvas id="cardCanvas" width="1080" height="1350" class="hidden"></canvas>
+
 <script>
 const $=id=>document.getElementById(id);
-let handHash=null, faceHash=null, quizScores=null, seedBase=null;
+let handHash=null, faceHash=null, quizScores=null, seedBase=null, pickedInsights=[];
 
 function usedFree(){return localStorage.getItem('hs_free_used')==='1'}
 function markFreeUsed(){localStorage.setItem('hs_free_used','1')}
 
-// ---------- quiz ----------
 const TRAITS=['الإبداع','القيادة','الذكاء الاجتماعي','الطموح','الهدوء','الثقة بالنفس'];
 const QUIZ=[
- {q:'وقت فراغك تفضّل…',o:[['أطلع مع ربعي ونضحك',2],['أقرا أو أتعلم شي جديد',4],['أسوي شي بإيدي، تصميم أو طبخ',0],['أخطط لمشروعي الجاي',3]]},
- {q:'إذا صارت مشكلة قدامك…',o:[['أحللها بهدوء قبل أي خطوة',4],['أقرر وأتصرف بسرعة',1],['أسأل ناس أثق فيهم',2],['أدور حل جديد ومختلف',0]]},
- {q:'ربعك يوصفونك بـ…',o:[['القائد',1],['المبدع',0],['اللي يسمع الكل ويضحك',2],['الطموح اللي ما يهدى',3]]},
- {q:'السهرة المثالية عندك…',o:[['قعدة مع ناس تحبهم',2],['تقدّم بهدف تشتغل عليه',3],['راحة وهدوء ومسلسل',4],['طلعة أو مغامرة جديدة',5]]},
- {q:'بالشغل أو الدراسة أنت…',o:[['منظم ودقيق بالتفاصيل',4],['سريع وتحب الإنجاز',3],['تعتمد على حدسك',0],['تشتغل بطريقتك الخاصة',5]]},
- {q:'أكثر شي يضايقك…',o:[['الروتين',0],['اللي ما يوفي بكلمته',5],['الفوضى وقلة التخطيط',4],['أحد يفرض عليك رأيه',1]]}
+ {q:'وقت فراغك تفضّل…',o:[['أطلع مع ربعي ونضحك',2,'راحتك الحقيقية مع ناسك؛ قعدة وحدة مع ربعك تسوى عندك أكثر من يوم راحة لحالك.'],['أقرا أو أتعلم شي جديد',4,'عقلك ما يشبع؛ حتى بوقت فراغك تدور شي يضيف لك، وهذي صفة الناس اللي تتطور بسرعة.'],['أسوي شي بإيدي، تصميم أو طبخ',0,'تحب النتيجة الملموسة؛ إيدك تفكر معك، والشي اللي تسويه بنفسك يريّح بالك.'],['أخطط لمشروعي الجاي',3,'حتى وأنت مرتاح، مخك يبني الخطة الجاية. الراحة عندك لها هدف.']]},
+ {q:'إذا صارت مشكلة قدامك…',o:[['أحللها بهدوء قبل أي خطوة',4,'أول ما تواجهك مشكلة تهدى بدل ما تتوتر، وهذي نعمة ما عند الكل — عقلك يشتغل تحت الضغط.'],['أقرر وأتصرف بسرعة',1,'تكره اللف والدوران؛ تشوف الحل وتتحرك. سرعتك بالقرار قوتك، بس أحيانًا تحتاج وقفة وحدة قبلها.'],['أسأل ناس أثق فيهم',2,'تعرف إن الرأي الثاني قوة مو ضعف، وهذي حكمة ناس كبار ما وصلوها.'],['أدور حل جديد ومختلف',0,'الحلول الجاهزة ما تعجبك؛ عندك ثقة إن في دائمًا طريق ثاني أحسن.']]},
+ {q:'ربعك يوصفونك بـ…',o:[['القائد',1,'ربعك يشوفونك قائد حتى لو أنت ما قلتها عن نفسك — والناس ما تخطي بهالشي.'],['المبدع',0,'ربعك يحسون بإبداعك قبل ما تتكلم؛ أفكارك تبين من طريقتك بالحچي نفسه.'],['اللي يسمع الكل ويضحك',2,'ربعك يعتمدون عليك تخفف أي جو، وهذي مسؤولية تحملها بدون ما تحس.'],['الطموح اللي ما يهدى',3,'ربعك يحترمون طموحك حتى لو ما فصّلت لهم أهدافك — طموحك يوصلهم من نظرتك.']]},
+ {q:'السهرة المثالية عندك…',o:[['قعدة مع ناس تحبهم',2,'سعادتك الحقيقية بالناس مو بالأماكن؛ المكان يحلى بس إذا فيه وجيه تحبها.'],['تقدّم بهدف تشتغل عليه',3,'حتى سهرتك لها معنى؛ الإنجاز عندك متعة مو شغل.'],['راحة وهدوء ومسلسل',4,'تعرف قيمة الهدوء؛ عقلك يحتاج مساحة يرتب فيها أفكاره.'],['طلعة أو مغامرة جديدة',5,'الروتين يقتلك؛ تحتاج جديد دايمًا عشان تحس إنك عايش.']]},
+ {q:'بالشغل أو الدراسة أنت…',o:[['منظم ودقيق بالتفاصيل',4,'دقتك بالتفاصيل مو وسوسة — هذا اللي يخلي شغلك يطلع مرتب من أول مرة.'],['سريع وتحب الإنجاز',3,'تعيش للحظة "خلصت"؛ الإنجاز عندك إدمان حلو.'],['تعتمد على حدسك',0,'حدسك بوصلتك؛ كم مرة قال لك شي وطلع صح؟ هذا مو صدفة.'],['تشتغل بطريقتك الخاصة',5,'ما تحب أحد يفرض عليك طريقته؛ تنجز أكثر لما يعطونك مساحتك.']]},
+ {q:'أكثر شي يضايقك…',o:[['الروتين',0,'تكره الروتين لأن روحك تحتاج جديد دايمًا؛ الثبات الطويل يخنق إبداعك.'],['اللي ما يوفي بكلمته',5,'الوفاء عندك خط أحمر؛ اللي يكسر كلمته مرة، يصعب يرجع لثقتك.'],['الفوضى وقلة التخطيط',4,'الفوضى تضايقك لأنك تقدّر النظام — وأنت من الناس اللي "لو ما هم، كان صار خراب".'],['أحد يفرض عليك رأيه',1,'استقلاليتك خط أحمر؛ تقبل النصيحة بس ما تقبل الأمر، والفرق عندك واضح.']]}
 ];
-let qi=0, answers=[];
+let qi=0, answers=[], chosen=[];
 $('startBtn').onclick=()=>{ $('step0').classList.add('hidden'); $('step1').classList.remove('hidden'); renderQ(); };
 function renderQ(){
   $('qcount').textContent='السؤال '+(qi+1)+' من '+QUIZ.length;
   $('qbar').style.width=(qi/QUIZ.length*100)+'%';
-  $('qcard').innerHTML='<h2 class="font-black text-lg mb-4">'+QUIZ[qi].q+'</h2>'+QUIZ[qi].o.map(o=>'<button class="opt w-full text-right rounded-2xl px-4 py-3 mb-3 text-sm font-bold" data-t="'+o[1]+'">'+o[0]+'</button>').join('');
-  $('qcard').querySelectorAll('button').forEach(b=>b.onclick=()=>{answers.push(+b.dataset.t);qi++;
+  $('qcard').innerHTML='<h2 class="font-black text-lg mb-4">'+QUIZ[qi].q+'</h2>'+QUIZ[qi].o.map((o,i)=>'<button class="opt w-full text-right rounded-2xl px-4 py-3 mb-3 text-sm font-bold" data-i="'+i+'">'+o[0]+'</button>').join('');
+  $('qcard').querySelectorAll('button').forEach(b=>b.onclick=()=>{const o=QUIZ[qi].o[+b.dataset.i];answers.push(o[1]);chosen.push(o[2]);qi++;
     if(qi<QUIZ.length){renderQ()}else{finishQuiz()}});
 }
 function finishQuiz(){
   $('qbar').style.width='100%';
   quizScores=[0,0,0,0,0,0];
   answers.forEach(t=>quizScores[t]++);
-  // base seed from answers (analysis works with quiz alone)
   seedBase=answers.reduce((a,v,i)=>a+v*(7+i*13),1234)>>>0;
   $('step1').classList.add('hidden');$('step2').classList.remove('hidden');
 }
 
-// ---------- optional photos ----------
 async function bindPhoto(dropId,inputId,prevId,setter){
   $(dropId).onclick=()=>$(inputId).click();
   $(inputId).onchange=async e=>{
@@ -190,12 +229,20 @@ function makeRng(){
 const pick=(r,arr)=>arr[Math.floor(r()*arr.length)];
 
 const ARCH=[
- ['🌟 القائد','عندك حضور قوي وثقة بنفسك تخلي الناس تتبعك بدون ما تطلب. تحب تمسك زمام الأمور، وقراراتك سريعة وواضحة.'],
- ['🎨 المبدع','تفكيرك خارج الصندوق دائمًا. تشوف الحلول والأفكار اللي غيرك ما ينتبه لها، وتحب تترك بصمتك الخاصة بكل شي تسويه.'],
- ['🤝 الاجتماعي','طاقتك من الناس. تعرف تكسب محبة أحد بسرعة، ووجودك بأي تجمع يغيّر الجو. قلبك كبير وتحس في اللي حولك.'],
- ['🔥 الطموح','عينك على هدف كبير وما يرضيك القليل. تشتغل بصمت وتنجز بقوة، والتحديات تزيدك حماس بدل ما تخوفك.'],
- ['🌊 الهادئ الحكيم','هدوءك قوتك. الناس يجونك وقت المشاكل لأنك تفكر بروية وما تستعجل. نصيحتك وزنها ذهب.'],
- ['⚡ المغامر','تحب التجديد وتكره الروتين. روحك حرة وتجرب أشياء يخاف منها غيرك. الحياة عندك مغامرة تستاهل تنعاش.']
+ ['🌟 القائد','عندك حضور قوي وثقة بنفسك تخلي الناس تتبعك بدون ما تطلب. تحب تمسك زمام الأمور، وقراراتك سريعة وواضحة. الناس ترتاح لما تكون أنت المسؤول، لأنهم يعرفون إنك ما تتهرب.'],
+ ['🎨 المبدع','تفكيرك خارج الصندوق دائمًا. تشوف الحلول والأفكار اللي غيرك ما ينتبه لها، وتحب تترك بصمتك الخاصة بكل شي تسويه. العالم عندك مو بس اللي تشوفه، فيه دايمًا نسخة أحلى براسك.'],
+ ['🤝 الاجتماعي','طاقتك من الناس. تعرف تكسب محبة أحد بسرعة، ووجودك بأي تجمع يغيّر الجو. قلبك كبير وتحس في اللي حولك قبل ما يتكلمون، وهذي موهبة نادرة.'],
+ ['🔥 الطموح','عينك على هدف كبير وما يرضيك القليل. تشتغل بصمت وتنجز بقوة، والتحديات تزيدك حماس بدل ما تخوفك. اللي حولك يحسون إنك رايح لمكان بعيد، وهم صادقين.'],
+ ['🌊 الهادئ الحكيم','هدوءك قوتك. الناس يجونك وقت المشاكل لأنك تفكر بروية وما تستعجل. نصيحتك وزنها ذهب، وكلمة منك توازن موقف كامل.'],
+ ['⚡ المغامر','تحب التجديد وتكره الروتين. روحك حرة وتجرب أشياء يخاف منها غيرك. الحياة عندك مغامرة تستاهل تنعاش بكل تفاصيلها.']
+];
+const SURPRISE=[
+ 'وراء قوتك، أنت أحنّ من اللي تبين بكثير — بس ما تحب أحد يشوف هالجهة إلا القليل اللي تثق فيهم.',
+ 'أكبر عدو لإبداعك هو خوفك إنه ما يطلع مثالي؛ لو تركب الموجة بدون ما تحكم على نفسك، بتفاجئ نفسك قبل غيرك.',
+ 'أحيانًا تعطي الكل وتنسى نفسك؛ خلّك لطيف مع نفسك مثل ما أنت لطيف مع غيرك.',
+ 'طموحك يخليك أحيانًا تعيش بالمستقبل وتنسى تستمتع باللي حققته — وقفة وحدة وشوف شقد وصلت.',
+ 'هدوءك أحيانًا يخلّي الناس ما تعرف متى تحتاجهم؛ ما تحتاج تصرخ، بس كلمة وحدة توصل.',
+ 'وراء حبك للمغامرة، تدور شي ثابت يعطيك أمان — ولما تلقاه، بتتمسك فيه أكثر من أي أحد.'
 ];
 const TRAIT_ARCH=[1,0,2,3,4,5];
 const STRENGTHS=['تحفز اللي حولك بدون ما تحس','تحافظ على هدوءك تحت الضغط','عندك حس فني وذوق مميز','كلمتك وحدة وما ترجع فيها','تتعلم من أخطائك بسرعة','حدسك قوي وغالبًا يصيب','تعرف توازن بين قلبك وعقلك','إصرارك يوصلك لما تبيه'];
@@ -204,10 +251,10 @@ const HAND_EXTRA=['خطوط كفك توحي بشخصية صبورة تعرف ت�
 const FACE_EXTRA=['ملامحك توحي بابتسامة تكسر الحواجز بسرعة 🙂','تعبيرك يدل على شخصية واثقة ومرحة 🙂','ملامحك توحي بشخص يقرا الناس بسرعة 🙂'];
 
 function statuses(){
-  const s=['نراجع إجاباتك...'];
+  const s=['نراجع إجاباتك وحدة وحدة...'];
   if(handHash)s.push('نقرأ ملامح كفك...');
   if(faceHash)s.push('نقرأ ملامح وجهك...');
-  s.push('نجمع النتائج...','نجهّز تقريرك...');
+  s.push('نربط إجاباتك ببعض...','نكتب تحليلك الخاص...');
   return s;
 }
 
@@ -215,28 +262,38 @@ async function runAnalysis(){
   if(usedFree()){$('step2').classList.add('hidden');$('paywall').classList.remove('hidden');return}
   markFreeUsed();
   $('step2').classList.add('hidden');$('step3').classList.remove('hidden');
-  for(const s of statuses()){$('status').textContent=s;await new Promise(r=>setTimeout(r,600))}
-  // photos processed in-memory only; drop references immediately after seeding
+  for(const s of statuses()){$('status').textContent=s;await new Promise(r=>setTimeout(r,650))}
   showResult();
   handHash=null;faceHash=null;
 }
 $('analyzeBtn').onclick=runAnalysis;
 $('skipBtn').onclick=runAnalysis;
 
+let traitValues=[];
 function showResult(){
   const r=makeRng();
   let dom=0,best=-1;
   quizScores.forEach((v,i)=>{const jitter=r()*0.5;if(v+jitter>best){best=v+jitter;dom=i}});
-  const a=ARCH[TRAIT_ARCH[dom]];
+  const ai=TRAIT_ARCH[dom];
+  const a=ARCH[ai];
   $('archetype').textContent=a[0];
   $('archDesc').textContent=a[1];
+  // personal insights: pick 3 chosen answers spread across the quiz
+  const idx=[...Array(6).keys()];
+  const picks=[idx[0],idx[2],idx[4]]; // Q1, Q3, Q5 -> varied life areas
+  pickedInsights=picks.map(i=>chosen[i]);
+  $('insights').innerHTML=pickedInsights.map(s=>'<li>✦ '+s+'</li>').join('');
+  $('surprise').textContent=SURPRISE[ai];
   const extras=[];
   if(handHash)extras.push(pick(r,HAND_EXTRA));
   if(faceHash)extras.push(pick(r,FACE_EXTRA));
   if(extras.length){$('photoExtra').classList.remove('hidden');$('extraList').innerHTML=extras.map(s=>'<li>✦ '+s+'</li>').join('')}
-  $('bars').innerHTML=TRAITS.map((t,i)=>{
+  traitValues=TRAITS.map((t,i)=>{
     const base=45+quizScores[i]*8+Math.floor(r()*22);
-    const v=Math.min(98,Math.max(40,base));
+    return Math.min(98,Math.max(40,base));
+  });
+  $('bars').innerHTML=TRAITS.map((t,i)=>{
+    const v=traitValues[i];
     return '<div><div class="flex justify-between text-sm mb-1"><span>'+t+'</span><span class="font-bold">'+v+'٪</span></div><div class="bar"><div data-v="'+v+'" style="width:0%"></div></div></div>';
   }).join('');
   const st=[...STRENGTHS].sort(()=>r()-0.5).slice(0,3);
@@ -244,12 +301,71 @@ function showResult(){
   $('lucky').textContent=pick(r,COLORS)+' • '+(1+Math.floor(r()*9));
   $('step3').classList.add('hidden');$('step4').classList.remove('hidden');
   setTimeout(()=>{document.querySelectorAll('#bars .bar>div').forEach(b=>{b.style.width=b.dataset.v+'%'})},120);
+  drawCard(a[0],dom);
 }
+
+// ---------- share card ----------
+function wrapText(ctx,text,x,y,maxW,lh){
+  const words=text.split(' ');let line='',yy=y;
+  for(const w of words){const t=line?line+' '+w:w;
+    if(ctx.measureText(t).width>maxW){ctx.fillText(line,x,yy);line=w;yy+=lh}
+    else line=t;}
+  ctx.fillText(line,x,yy);return yy+lh;
+}
+function drawCard(archName,dom){
+  const c=$('cardCanvas'),ctx=c.getContext('2d');
+  const g=ctx.createLinearGradient(0,0,1080,1350);
+  g.addColorStop(0,'#1a1030');g.addColorStop(1,'#3b1156');
+  ctx.fillStyle=g;ctx.fillRect(0,0,1080,1350);
+  ctx.fillStyle='rgba(168,85,247,.18)';
+  ctx.beginPath();ctx.arc(540,120,420,0,7);ctx.fill();
+  ctx.textAlign='center';ctx.direction='rtl';
+  ctx.fillStyle='#c9a9f5';ctx.font='700 44px Tajawal, sans-serif';
+  ctx.fillText('اعرف شخصيتك 🔮',540,150);
+  ctx.fillStyle='#ffffff';ctx.font='900 96px Tajawal, sans-serif';
+  ctx.fillText(archName,540,420);
+  ctx.fillStyle='#e9dcff';ctx.font='500 46px Tajawal, sans-serif';
+  let y=540;
+  // top 3 traits
+  const top3=traitValues.map((v,i)=>[TRAITS[i],v]).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  top3.forEach(([t,v])=>{
+    ctx.fillStyle='#e9dcff';ctx.font='700 44px Tajawal, sans-serif';
+    ctx.fillText(t+'  '+v+'٪',540,y);
+    ctx.fillStyle='rgba(255,255,255,.12)';
+    ctx.fillRect(190,y+24,700,20);
+    const bg=ctx.createLinearGradient(190,0,890,0);
+    bg.addColorStop(0,'#ec4899');bg.addColorStop(1,'#a855f7');
+    ctx.fillStyle=bg;
+    ctx.fillRect(190+700*(1-v/100),y+24,700*v/100,20);
+    y+=120;
+  });
+  ctx.fillStyle='#c9a9f5';ctx.font='500 40px Tajawal, sans-serif';
+  y+=40;
+  y=wrapText(ctx,'"'+SURPRISE[dom]+'"',540,y,860,64);
+  ctx.fillStyle='#ffffff';ctx.font='700 42px Tajawal, sans-serif';
+  ctx.fillText('جرّب تحليلك مجانًا 👇',540,1200);
+  ctx.fillStyle='#c9a9f5';ctx.font='500 40px Tajawal, sans-serif';
+  ctx.fillText('mrahmed22296-gif.github.io/aaref-shakhsiyatak',540,1270);
+  const url=c.toDataURL('image/png');
+  $('cardImg').src=url;
+  $('dlBtn').href=url;
+}
+$('shareCardBtn').onclick=async()=>{
+  try{
+    const blob=await new Promise(res=>$('cardCanvas').toBlob(res,'image/png'));
+    const file=new File([blob],'نتيجتي.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'نتيجتي في اعرف شخصيتك'});
+    }else{
+      $('dlBtn').click();
+    }
+  }catch(e){}
+};
 
 $('waitBtn').onclick=()=>{localStorage.setItem('hs_waitlist','1');$('waitMsg').classList.remove('hidden');$('waitBtn').disabled=true;$('waitBtn').textContent='تم التسجيل ✅'};
 if(localStorage.getItem('hs_waitlist')==='1'){$('waitBtn').disabled=true;$('waitBtn').textContent='تم التسجيل ✅';$('waitMsg').classList.remove('hidden')}
 function share(){
-  const txt='جرّبت موقع يحلل شخصيتك من إجاباتك 🔮 طلع تحليلي غريب من كثر ما يشبهني! جرّبه مجانًا: '+location.href;
+  const txt='طلع تحليل شخصيتي وصُدمت كم يشبهني 😳 جاوب ٦ أسئلة وشوف نتيجتك — أول تحليل مجاني: '+location.href;
   if(navigator.share){navigator.share({title:'اعرف شخصيتك',text:txt,url:location.href}).catch(()=>{})}
   else{window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank')}
 }
