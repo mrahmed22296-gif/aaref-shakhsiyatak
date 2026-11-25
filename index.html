@@ -41,6 +41,13 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
     <p class="text-sm text-purple-100/80 leading-7 mb-5">١) جاوب ٦ أسئلة سريعة عنك<br>٢) (اختياري) أضف صورة كفك أو وجهك لتفاصيل أكثر<br>٣) يطلع لك تحليل مفصّل مبني على إجاباتك أنت</p>
     <button id="startBtn" class="btn w-full py-3 rounded-2xl font-bold text-lg">ابدأ الاختبار ✨</button>
     <p class="text-xs text-purple-200/60 mt-4">أول تحليل مجاني 🎁</p>
+    <div class="mt-5 rounded-2xl border border-purple-400/40 bg-purple-500/10 p-4">
+      <p class="font-black mb-1">👑 الاشتراك الكامل</p>
+      <p class="text-2xl font-black mb-1">دينار واحد <span class="text-sm font-normal text-purple-200/70">شهريًا</span></p>
+      <p class="text-xs text-purple-100/80 leading-6 mb-3">تحليلات بلا حدود + أقسام حصرية: جانبك الخفي، شخصيتك بالعلاقات، ومسارك المهني</p>
+      <button data-wait class="btn w-full py-2 rounded-xl font-bold text-sm">انضم لقائمة الانتظار — الاشتراك قريبًا 🔔</button>
+      <p data-waitmsg class="hidden text-xs text-green-300 mt-2">✅ سجلنا اهتمامك! بنعلمك أول ما يفتح</p>
+    </div>
   </section>
 
   <section id="step1" class="hidden fade">
@@ -88,6 +95,12 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
       <p id="archDesc" class="text-sm text-purple-100/90 leading-7"></p>
     </div>
 
+    <div class="rounded-3xl border border-purple-400/40 bg-purple-500/10 p-5 mb-4 text-center">
+      <p class="font-black mb-1">👑 افتح تحليلك الكامل</p>
+      <p class="text-xs text-purple-100/80 leading-6 mb-2">بالاشتراك (<span class="font-bold">دينار واحد شهريًا</span>): جانبك الخفي، شخصيتك بالعلاقات، مسارك المهني، وتحليلات بلا حدود</p>
+      <button data-wait class="btn px-6 py-2 rounded-xl font-bold text-sm">اشترك بدينار واحد — قريبًا 🔔</button>
+      <p data-waitmsg class="hidden text-xs text-green-300 mt-2">✅ سجلنا اهتمامك!</p>
+    </div>
     <div class="card rounded-3xl p-6 mb-4">
       <h3 class="font-bold mb-1">✨ من إجاباتك بالضبط</h3>
       <p class="text-[11px] text-purple-200/60 mb-4">هذا مو تحليل عام — هذي قراءة في اللي اخترته أنت:</p>
@@ -372,8 +385,12 @@ $('shareCardBtn').onclick=async()=>{
   }catch(e){}
 };
 
-$('waitBtn').onclick=()=>{localStorage.setItem('hs_waitlist','1');$('waitMsg').classList.remove('hidden');$('waitBtn').disabled=true;$('waitBtn').textContent='تم التسجيل ✅'};
-if(localStorage.getItem('hs_waitlist')==='1'){$('waitBtn').disabled=true;$('waitBtn').textContent='تم التسجيل ✅';$('waitMsg').classList.remove('hidden')}
+function refreshWait(){const on=localStorage.getItem('hs_waitlist')==='1';
+  document.querySelectorAll('[data-wait]').forEach(b=>{if(on){b.disabled=true;b.textContent='تم التسجيل ✅'}});
+  document.querySelectorAll('[data-waitmsg]').forEach(m=>{if(on)m.classList.remove('hidden')});}
+document.querySelectorAll('[data-wait]').forEach(b=>b.onclick=()=>{localStorage.setItem('hs_waitlist','1');refreshWait()});
+const _wb=$('waitBtn');if(_wb){_wb.dataset.wait='1';_wb.onclick=()=>{localStorage.setItem('hs_waitlist','1');refreshWait()};}
+refreshWait();
 function share(){
   const txt='طلع تحليل شخصيتي وصُدمت كم يشبهني 😳 جاوب ٦ أسئلة وشوف نتيجتك — أول تحليل مجاني: '+location.href;
   if(navigator.share){navigator.share({title:'اعرف شخصيتك',text:txt,url:location.href}).catch(()=>{})}
