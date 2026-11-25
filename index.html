@@ -537,9 +537,10 @@ function showResult(){
   $('subBanner').classList.toggle('hidden',sub);
   ['premBig','premLove','premCareer'].forEach(id=>{
     const el=$(id);
+    const inner=el.children[0], lay=el.children[1];
     el.classList.toggle('locked',!sub);
-    el.querySelector('.blur').classList.toggle('blur',!sub);
-    el.querySelector('.locklay').classList.toggle('hidden',sub);
+    inner.classList.toggle('blur',!sub);
+    lay.classList.toggle('hidden',sub);
   });
   $('step3').classList.add('hidden');$('step4').classList.remove('hidden');
   setTimeout(()=>{document.querySelectorAll('#bars .bar>div').forEach(b=>{b.style.width=b.dataset.v+'%'})},120);
