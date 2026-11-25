@@ -589,7 +589,7 @@ function drawCard(archNameFull,dom){
   ctx.fillStyle='#ffffff';ctx.font='700 42px Tajawal, sans-serif';
   ctx.fillText('جرّب تحليلك مجانًا',540,1200);
   ctx.fillStyle='#c9a9f5';ctx.font='500 40px Tajawal, sans-serif';
-  ctx.fillText('mrahmed22296-gif.github.io/aaref-shakhsiyatak',540,1270);
+  ctx.fillText('aaref.vercel.app',540,1270);
   const url=c.toDataURL('image/png');
   $('cardImg').src=url;
   $('dlBtn').href=url;
@@ -608,8 +608,8 @@ $('shareCardBtn').onclick=async()=>{
 
 
 function share(){
-  const txt='طلع تحليل شخصيتي وصُدمت كم يشبهني 😳 جاوب ٦ أسئلة وشوف نتيجتك — أول تحليل مجاني: '+location.href;
-  if(navigator.share){navigator.share({title:'اعرف شخصيتك',text:txt,url:location.href}).catch(()=>{})}
+  const txt='طلع تحليل شخصيتي وصُدمت كم يشبهني 😳 جاوب ٦ أسئلة وشوف نتيجتك — أول تحليل مجاني: aaref.vercel.app';
+  if(navigator.share){navigator.share({title:'اعرف شخصيتك',text:txt,url:'https://aaref.vercel.app'}).catch(()=>{})}
   else{window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank')}
 }
 $('shareBtn').onclick=share;$('shareBtn2').onclick=share;
