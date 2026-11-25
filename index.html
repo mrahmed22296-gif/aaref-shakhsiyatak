@@ -312,7 +312,8 @@ function wrapText(ctx,text,x,y,maxW,lh){
     else line=t;}
   ctx.fillText(line,x,yy);return yy+lh;
 }
-function drawCard(archName,dom){
+function drawCard(archNameFull,dom){
+  const archName=archNameFull.replace(/^\S+\s+/,'');
   const c=$('cardCanvas'),ctx=c.getContext('2d');
   const g=ctx.createLinearGradient(0,0,1080,1350);
   g.addColorStop(0,'#1a1030');g.addColorStop(1,'#3b1156');
@@ -321,7 +322,7 @@ function drawCard(archName,dom){
   ctx.beginPath();ctx.arc(540,120,420,0,7);ctx.fill();
   ctx.textAlign='center';ctx.direction='rtl';
   ctx.fillStyle='#c9a9f5';ctx.font='700 44px Tajawal, sans-serif';
-  ctx.fillText('اعرف شخصيتك 🔮',540,150);
+  ctx.fillText('اعرف شخصيتك',540,150);
   ctx.fillStyle='#ffffff';ctx.font='900 96px Tajawal, sans-serif';
   ctx.fillText(archName,540,420);
   ctx.fillStyle='#e9dcff';ctx.font='500 46px Tajawal, sans-serif';
@@ -343,7 +344,7 @@ function drawCard(archName,dom){
   y+=40;
   y=wrapText(ctx,'"'+SURPRISE[dom]+'"',540,y,860,64);
   ctx.fillStyle='#ffffff';ctx.font='700 42px Tajawal, sans-serif';
-  ctx.fillText('جرّب تحليلك مجانًا 👇',540,1200);
+  ctx.fillText('جرّب تحليلك مجانًا',540,1200);
   ctx.fillStyle='#c9a9f5';ctx.font='500 40px Tajawal, sans-serif';
   ctx.fillText('mrahmed22296-gif.github.io/aaref-shakhsiyatak',540,1270);
   const url=c.toDataURL('image/png');
