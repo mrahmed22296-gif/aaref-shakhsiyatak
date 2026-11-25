@@ -237,13 +237,13 @@ function showResult(){
   $('bars').innerHTML=TRAITS.map((t,i)=>{
     const base=45+quizScores[i]*8+Math.floor(r()*22);
     const v=Math.min(98,Math.max(40,base));
-    return '<div><div class="flex justify-between text-sm mb-1"><span>'+t+'</span><span class="font-bold">'+v+'٪</span></div><div class="bar"><div style="width:0%"></div></div></div>';
+    return '<div><div class="flex justify-between text-sm mb-1"><span>'+t+'</span><span class="font-bold">'+v+'٪</span></div><div class="bar"><div data-v="'+v+'" style="width:0%"></div></div></div>';
   }).join('');
   const st=[...STRENGTHS].sort(()=>r()-0.5).slice(0,3);
   $('strengths').innerHTML=st.map(s=>'<li>✦ '+s+'</li>').join('');
   $('lucky').textContent=pick(r,COLORS)+' • '+(1+Math.floor(r()*9));
   $('step3').classList.add('hidden');$('step4').classList.remove('hidden');
-  setTimeout(()=>{document.querySelectorAll('#bars .bar>div').forEach(b=>{const v=b.closest('div').parentElement.querySelector('.font-bold').textContent;b.style.width=v})},120);
+  setTimeout(()=>{document.querySelectorAll('#bars .bar>div').forEach(b=>{b.style.width=b.dataset.v+'%'})},120);
 }
 
 $('waitBtn').onclick=()=>{localStorage.setItem('hs_waitlist','1');$('waitMsg').classList.remove('hidden');$('waitBtn').disabled=true;$('waitBtn').textContent='تم التسجيل ✅'};
