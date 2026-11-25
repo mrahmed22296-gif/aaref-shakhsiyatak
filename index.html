@@ -8,8 +8,6 @@
 <meta property="og:title" content="اعرف شخصيتك">
 <meta property="og:description" content="تحليل شخصية مفصّل من إجاباتك أنت — جرّبه مجانًا">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
@@ -31,17 +29,6 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
 <body class="text-white min-h-screen glow">
 <div class="max-w-md mx-auto px-5 py-8">
 
-  <section id="loginScreen" class="card rounded-3xl p-7 text-center fade" style="margin-top:6vh">
-    <div class="text-5xl mb-3">🔮</div>
-    <h1 class="text-2xl font-black mb-2">اعرف شخصيتك</h1>
-    <p class="text-sm text-purple-100/80 leading-7 mb-6">تحليل شخصية مفصّل من إجاباتك أنت — مو كلام عام. سجّل دخولك أولاً، وبعدها يتوفر لك تحليل مجاني قبل الاشتراك.</p>
-    <button id="googleBtn" type="button" class="w-full min-h-12 rounded-xl border border-white/20 bg-white text-slate-700 font-bold text-sm flex justify-center items-center gap-3" onclick="loginWithGoogle()">
-      <span class="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 via-red-500 to-yellow-400"></span>
-      تسجيل الدخول بواسطة Google
-    </button>
-    <p class="mt-4 text-xs leading-6 text-purple-200/60">تسجّل الدخول أولاً، ثم يتوفر لك تحليل مجاني واحد قبل الاشتراك.</p>
-    <p id="loginError" class="hidden mt-4 text-xs text-red-400"></p>
-  </section>
 
   <section id="subscribeScreen" class="hidden card rounded-3xl p-6 text-center fade" style="margin-top:4vh">
     <div class="w-14 h-14 mx-auto mb-4 btn text-white rounded-2xl grid place-items-center text-xl font-black">د</div>
@@ -66,10 +53,9 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
     <button type="button" onclick="backToApp()" class="mt-4 text-xs text-purple-200/60 underline underline-offset-4">العودة لاحقاً</button>
   </section>
 
-  <div id="appScreen" class="hidden">
+  <div id="appScreen">
 
-  <header class="text-center mb-8 relative">
-    <p id="userChip" class="absolute left-0 top-0 text-[11px] text-purple-200/60"></p>
+  <header class="text-center mb-8">
     <div class="text-5xl mb-3">🔮</div>
     <h1 class="text-3xl font-black mb-1">اعرف شخصيتك</h1>
     <p class="text-purple-200/80 text-sm">تحليل مفصّل عنك أنت، مو كلام عام</p>
@@ -228,101 +214,21 @@ body{font-family:'Tajawal',sans-serif;background:#0f0a1e}
 const $=id=>document.getElementById(id);
 let handHash=null, faceHash=null, quizScores=null, seedBase=null, pickedInsights=[];
 
-/* === اشتراك ومض + دخول جوجل (نفس آلية مواقع مسار/محاسبة) === */
-const firebaseConfig = {
-  apiKey: "AIzaSyCBtfYpB_j8X1ME-lMqP738Fy06FalSXIM",
-  authDomain: "resume-builder-access.firebaseapp.com",
-  projectId: "resume-builder-access",
-  storageBucket: "resume-builder-access.firebasestorage.app",
-  messagingSenderId: "209097923358",
-  appId: "1:209097923358:web:90e660900f02a621b5c70f",
-};
-const SITE_ID = "aaref";
-let currentUser = null, auth = null;
-const FS_ROOT = "https://firestore.googleapis.com/v1/projects/resume-builder-access/databases/(default)/documents";
-
-function loginWithGoogle() {
-  if (!auth) { $('loginError').textContent = 'تعذر الاتصال بخدمة تسجيل الدخول. تحقق من الاتصال وأعد المحاولة.'; $('loginError').classList.remove('hidden'); return; }
-  const button = $('googleBtn');
-  const provider = new firebase.auth.GoogleAuthProvider();
-  button.disabled = true; button.classList.add('opacity-60');
-  auth.signInWithPopup(provider).catch((error) => {
-    if (error?.code === 'auth/popup-blocked') {
-      $('loginError').textContent = 'حظر المتصفح النافذة المنبثقة؛ جاري تحويلك إلى صفحة Google لتسجيل الدخول.';
-      $('loginError').classList.remove('hidden');
-      return auth.signInWithRedirect(provider);
-    }
-    throw error;
-  }).catch((e)=>{ $('loginError').textContent = 'تعذر تسجيل الدخول بواسطة Google. أعد المحاولة.'; $('loginError').classList.remove('hidden'); })
-    .finally(()=>{ button.disabled = false; button.classList.remove('opacity-60'); });
-}
-
-function initializeAuth() {
-  try {
-    firebase.initializeApp(firebaseConfig);
-    auth = firebase.auth();
-    auth.getRedirectResult().catch(()=>{});
-    auth.onAuthStateChanged((user) => {
-      currentUser = user;
-      if (user) {
-        $('loginScreen').classList.add('hidden');
-        $('appScreen').classList.remove('hidden');
-        $('userChip').textContent = user.displayName || user.email || '';
-        syncUserDoc(false);
-      } else {
-        $('appScreen').classList.add('hidden');
-        $('subscribeScreen').classList.add('hidden');
-        $('loginScreen').classList.remove('hidden');
-      }
-    });
-  } catch (e) {
-    $('loginError').textContent = 'تعذر الاتصال بخدمة تسجيل الدخول.';
-    $('loginError').classList.remove('hidden');
-  }
-}
-
-async function syncUserDoc(markSubscription) {
-  try {
-    if (!currentUser?.uid) return;
-    const token = await currentUser.getIdToken();
-    const docPath = `projects/resume-builder-access/databases/(default)/documents/users/${currentUser.uid}`;
-    const writes = [
-      { update: { name: docPath, fields: {
-        email: { stringValue: currentUser.email || "" },
-        name: { stringValue: currentUser.displayName || "" },
-        lastSeenAt: { timestampValue: new Date().toISOString() },
-      } }, updateMask: { fieldPaths: ["email", "name", "lastSeenAt"] } },
-      { transform: { document: docPath, fieldTransforms: [
-        { fieldPath: "sites", appendMissingElements: { values: [{ stringValue: SITE_ID }] } },
-      ] } },
-    ];
-    if (markSubscription) {
-      writes.push({ transform: { document: docPath, fieldTransforms: [
-        { fieldPath: "subscriptions", appendMissingElements: { values: [{ stringValue: SITE_ID }] } },
-      ] } });
-    }
-    await fetch(FS_ROOT + ":commit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
-      body: JSON.stringify({ writes }),
-    });
-  } catch (e) {}
-}
-
+/* === اشتراك ومض (بدون تسجيل دخول — نفس فكرة مواقعه، الكود ينحفظ على الجهاز) === */
 function getUsedCodes() {
   try { const used = JSON.parse(localStorage.getItem("aaref_used_activation_codes") || "[]");
     return Array.isArray(used) ? used.filter(c => typeof c === "string") : []; } catch { return []; }
 }
 function isCodeUsed(code) { return getUsedCodes().includes(code); }
 function markCodeAsUsed(code) { const used = getUsedCodes(); if (!used.includes(code)) { used.push(code); localStorage.setItem("aaref_used_activation_codes", JSON.stringify(used)); } }
-function isSubscribed() { return Boolean(currentUser?.uid && localStorage.getItem(`aaref_subscribed_${currentUser.uid}`) === "true"); }
-function setSubscribed(code) { if (!currentUser?.uid) return; localStorage.setItem(`aaref_subscribed_${currentUser.uid}`, "true"); if (code) markCodeAsUsed(code); }
-function usedFree(){ return isSubscribed() ? false : Boolean(currentUser?.uid && localStorage.getItem(`aaref_free_used_${currentUser.uid}`) === '1'); }
-function markFreeUsed(){ if(currentUser?.uid) localStorage.setItem(`aaref_free_used_${currentUser.uid}`,'1'); }
+function isSubscribed() { return localStorage.getItem("aaref_subscribed") === "true"; }
+function setSubscribed(code) { localStorage.setItem("aaref_subscribed", "true"); if (code) markCodeAsUsed(code); }
+function usedFree(){ return isSubscribed() ? false : localStorage.getItem("aaref_free_used") === "1"; }
+function markFreeUsed(){ localStorage.setItem("aaref_free_used","1"); }
 
 function showSubscribeScreen() {
   if (isSubscribed()) { alert('اشتراكك مفعل بالفعل ✅'); return; }
-  ['appScreen'].forEach(id=>$(id).classList.add('hidden'));
+  $('appScreen').classList.add('hidden');
   $('subscribeScreen').classList.remove('hidden');
   $('activationCode').value = '';
   $('activateMessage').classList.add('hidden');
@@ -342,7 +248,7 @@ async function activateCode() {
   try {
     const rr = await fetch("https://mohasaba-online.vercel.app/api/redeem", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ site: SITE_ID, code }),
+      body: JSON.stringify({ site: "aaref", code }),
     });
     const rd = await rr.json();
     okCode = !!(rd && rd.ok);
@@ -350,27 +256,17 @@ async function activateCode() {
     message.className = 'mt-3 text-xs font-bold text-red-400'; message.textContent = 'تعذر التحقق من الكود. تحقق من الاتصال وأعد المحاولة.'; return;
   }
   if (!okCode) { message.className = 'mt-3 text-xs font-bold text-red-400'; message.textContent = 'كود التفعيل غير صحيح.'; return; }
-  if (isCodeUsed(code)) { message.className = 'mt-3 text-xs font-bold text-red-400'; message.textContent = 'تم استخدام هذا الكود مسبقاً.'; return; }
-  if (isSubscribed()) { message.className = 'mt-3 text-xs font-bold text-green-300'; message.textContent = 'حسابك مفعل بالفعل.'; return; }
+  if (isCodeUsed(code)) { message.className = 'mt-3 text-xs font-bold text-red-400'; message.textContent = 'تم استخدام هذا الكود مسبقاً على هذا الجهاز.'; return; }
+  if (isSubscribed()) { message.className = 'mt-3 text-xs font-bold text-green-300'; message.textContent = 'اشتراكك مفعل بالفعل.'; return; }
   setSubscribed(code);
-  syncUserDoc(true);
   message.className = 'mt-3 text-xs font-bold text-green-300'; message.textContent = 'تم تفعيل الاشتراك بنجاح ✅ جاري الرجوع...';
   setTimeout(backToApp, 1100);
 }
 function contactWhatsApp() {
   const phone = "96560085043";
-  const name = currentUser?.displayName || "";
-  const email = currentUser?.email || "";
-  const text = encodeURIComponent(`السلام عليكم،
-أريد تفعيل الاشتراك في اعرف شخصيتك.
-المبلغ: 1 دينار
-الاسم: ${name}
-الإيميل: ${email}
-
-مرفق إيصال الدفع عبر ومض.`);
+  const text = encodeURIComponent(`السلام عليكم،\nأريد تفعيل الاشتراك في اعرف شخصيتك.\nالمبلغ: 1 دينار\n\nمرفق إيصال الدفع عبر ومض.`);
   window.open(`https://wa.me/${phone}?text=${text}`, "_blank", "noopener,noreferrer");
 }
-initializeAuth();
 
 const TRAITS=['الإبداع','القيادة','الذكاء الاجتماعي','الطموح','الهدوء','الثقة بالنفس'];
 const POOL=[
