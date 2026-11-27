@@ -18,11 +18,23 @@
 <body>
 <div class="wrap">
   <div class="top"><a class="logo" href="#/">🔮 اعرف شخصيتك</a><div><a class="icon" href="#/account" aria-label="حسابي">👤</a> <button class="icon" id="themeBtn" aria-label="تبديل الوضع">🌓</button></div></div>
+  <div id="upd" style="display:none;margin:0 0 12px;padding:12px 14px;border-radius:18px;background:rgba(168,85,247,.18);border:2px solid #a855f7;align-items:center;gap:10px;font-weight:800;font-size:15px"><span style="flex:1">يوجد إصدار جديد من التطبيق</span><button id="updb" type="button" style="border:none;border-radius:12px;background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;font-family:inherit;font-weight:900;font-size:15px;padding:10px 14px">تحديث التطبيق</button></div>
   <main id="view" aria-live="polite"></main>
   <nav class="nav"><a href="/faq.html">الأسئلة الشائعة</a><a href="/privacy.html">الخصوصية</a><a href="/terms.html">الشروط والأحكام</a><a href="/contact.html">تواصل معنا</a></nav>
   <p class="mut c" style="margin-top:14px">للتسلية والتأمل فقط، وليس تشخيصاً نفسياً أو حقيقة علمية.</p>
 </div>
 <script src="/assets/data.js"></script>
 <script src="/assets/app.js"></script>
+<script>
+(function(){
+ if(!(window.NativeApp&&NativeApp.version))return;
+ var APK='https://github.com/mrahmed22296-gif/video-saver-app/releases/download/aaref/aaref.apk';
+ fetch('https://api.github.com/repos/mrahmed22296-gif/video-saver-app/releases/tags/aaref').then(function(r){return r.json()}).then(function(j){
+  var n=parseInt(String(j.name||'').replace(/\D/g,''),10),cur=parseInt(NativeApp.version(),10);
+  if(n&&cur&&n>cur){var u=document.getElementById('upd');u.style.display='flex';
+   document.getElementById('updb').onclick=function(){var b=this;b.textContent='جاري التحميل...';NativeApp.update(APK);setTimeout(function(){b.textContent='تحديث التطبيق'},6000)}}
+ }).catch(function(){});
+})();
+</script>
 </body>
 </html>
