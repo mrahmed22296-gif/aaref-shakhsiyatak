@@ -1,1 +1,37 @@
-{"headers":[{"source":"/assets/(.*)","headers":[{"key":"Cache-Control","value":"public, max-age=86400"}]},{"source":"/(.*)","headers":[{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"Referrer-Policy","value":"strict-origin-when-cross-origin"},{"key":"X-Frame-Options","value":"DENY"}]}]}
+{
+ "headers": [
+  {
+   "source": "/assets/(.*)",
+   "headers": [
+    {
+     "key": "Cache-Control",
+     "value": "public, max-age=86400"
+    }
+   ]
+  },
+  {
+   "source": "/(.*)",
+   "headers": [
+    {
+     "key": "X-Content-Type-Options",
+     "value": "nosniff"
+    },
+    {
+     "key": "Referrer-Policy",
+     "value": "strict-origin-when-cross-origin"
+    },
+    {
+     "key": "X-Frame-Options",
+     "value": "DENY"
+    }
+   ]
+  }
+ ],
+ "redirects": [
+  {
+   "source": "/app",
+   "destination": "https://github.com/mrahmed22296-gif/video-saver-app/releases/download/aaref/aaref.apk",
+   "permanent": false
+  }
+ ]
+}
